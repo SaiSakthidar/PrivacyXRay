@@ -16,6 +16,9 @@ const CATEGORY_COLORS = {
   unknown: { bg: 'rgba(120,120,160,0.12)', color: '#7878a0', dot: '#7878a0', label: 'Unknown' }
 };
 
+// Store AI cookie explanations globally
+let cookieExplanations = {};
+
 // ===== FORM HANDLING =====
 searchForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -228,8 +231,12 @@ function renderCookieTable(cookiesData, view) {
 
   tbody.innerHTML = list.slice(0, 50).map(c => {
     const cat = CATEGORY_COLORS[c.category] || CATEGORY_COLORS.unknown;
+    const explanation = cookieExplanations[c.name] || '';
     return `<tr>
-      <td>${escapeHtml(c.name)}</td>
+      <td>
+        <div>${escapeHtml(c.name)}</div>
+        ${explanation ? `<div style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font);margin-top:3px;font-style:italic">${escapeHtml(explanation)}</div>` : ''}
+      </td>
       <td><span class="cookie-category-badge" style="background:${cat.bg};color:${cat.color}">${cat.label}</span></td>
       <td title="${escapeHtml(c.value || '')}">${escapeHtml((c.value || '').substring(0, 40))}${(c.value || '').length > 40 ? '…' : ''}</td>
     </tr>`;
@@ -349,40 +356,71 @@ function renderGeo(data) {
 
 // ===== RENDER AI ANALYSIS =====
 function renderAIAnalysis(data) {
+  const aiCard = document.getElementById('ai-card');
+  aiCard.classList.remove('hidden');
+
   if (data.error) {
-    const aiCard = document.getElementById('ai-card');
-    aiCard.classList.remove('hidden');
-    document.getElementById('ai-summary').textContent = 'AI Analysis Failed: ' + data.error;
+    document.getElementById('ai-summary').innerHTML = `<div class="ai-error-msg">⚠️ AI Analysis Failed<br><small>${escapeHtml(data.error)}</small></div>`;
     document.getElementById('ai-violations').innerHTML = '';
     document.getElementById('ai-praise').textContent = '';
-    document.getElementById('ai-risk-level').textContent = 'Unknown';
+    document.getElementById('ai-risk-level').textContent = '—';
     document.getElementById('ai-risk-explanation').textContent = '';
     return;
   }
-  
-  const aiCard = document.getElementById('ai-card');
-  aiCard.classList.remove('hidden');
-  
-  document.getElementById('ai-summary').textContent = data.executive_summary;
-  
+
+  // Executive summary
+  document.getElementById('ai-summary').textContent = data.executive_summary || '';
+
+  // Violations
   const violationsList = document.getElementById('ai-violations');
   if (data.key_violations && data.key_violations.length) {
     violationsList.innerHTML = data.key_violations.map(v => `<li>${escapeHtml(v)}</li>`).join('');
   } else {
-    violationsList.innerHTML = '<li>None identified</li>';
+    violationsList.innerHTML = '<li style="border-left-color:var(--accent-green);background:rgba(0,232,123,0.05)">No violations identified</li>';
   }
-  
-  document.getElementById('ai-praise').textContent = data.praise || 'None';
-  
-  const riskLevelSpan = document.getElementById('ai-risk-level');
-  riskLevelSpan.textContent = data.dark_pattern_risk;
-  
-  // Color the risk level
-  const riskColor = data.dark_pattern_risk.toLowerCase() === 'high' ? 'var(--accent-red)' :
-                    data.dark_pattern_risk.toLowerCase() === 'medium' ? 'var(--accent-yellow)' : 'var(--accent-green)';
-  riskLevelSpan.style.color = riskColor;
-  
-  document.getElementById('ai-risk-explanation').textContent = data.dark_pattern_explanation;
+
+  // Praise
+  document.getElementById('ai-praise').textContent = data.praise || 'None identified';
+
+  // Risk gauge animation
+  const riskLevel = (data.dark_pattern_risk || 'Unknown').toLowerCase();
+  const riskLevelEl = document.getElementById('ai-risk-level');
+  const riskRingFill = document.getElementById('ai-risk-ring-fill');
+  const circumference = 301.59;
+
+  let riskPct = 0.33;
+  let riskColor = 'var(--accent-green)';
+  if (riskLevel === 'high') { riskPct = 1.0; riskColor = 'var(--accent-red)'; }
+  else if (riskLevel === 'medium') { riskPct = 0.6; riskColor = 'var(--accent-yellow)'; }
+  else if (riskLevel === 'low') { riskPct = 0.25; riskColor = 'var(--accent-green)'; }
+
+  riskLevelEl.textContent = data.dark_pattern_risk || 'Unknown';
+  riskLevelEl.style.color = riskColor;
+
+  // Animate the ring after a short delay
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      riskRingFill.style.stroke = riskColor;
+      riskRingFill.style.strokeDashoffset = circumference - (riskPct * circumference);
+    }, 200);
+  });
+
+  document.getElementById('ai-risk-explanation').textContent = data.dark_pattern_explanation || '';
+
+  // Store cookie explanations and re-render table if cookies already loaded
+  if (data.cookie_explanations && typeof data.cookie_explanations === 'object') {
+    cookieExplanations = data.cookie_explanations;
+    // Re-render the currently active cookie tab to show explanations
+    const activeTab = document.querySelector('.cookie-tab.active');
+    if (activeTab) {
+      const cookieCard = document.getElementById('cookie-card');
+      if (!cookieCard.classList.contains('hidden')) {
+        // We need the cookie data - get it from the existing table state
+        // Trigger a click on the active tab to re-render
+        activeTab.click();
+      }
+    }
+  }
 }
 
 // ===== RENDER FINAL SCORE =====

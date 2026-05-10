@@ -20,6 +20,7 @@ async function analyzeWithAI(cookieData, policyData, geoData, apiKey, sendProgre
       third_party_scripts: cookieData?.scripts?.length || 0,
       cookie_banner_found: cookieData?.cookie_banner_found || false,
       reject_button_found: cookieData?.reject_button_found || false,
+      cookie_names: cookieData?.cookies?.before_reject?.map(c => c.name) || [],
       policy_found: policyData?.policy_found || false,
       policy_claims: policyData?.claims || {},
       geo_insights: geoData?.insights || {},
@@ -38,7 +39,8 @@ async function analyzeWithAI(cookieData, policyData, geoData, apiKey, sendProgre
       "key_violations": ["List of 2-4 major issues, e.g. dark patterns, undisclosed trackers, GDPR/DPDP concerns"],
       "praise": "Any good practices found (or 'None' if awful)",
       "dark_pattern_risk": "High, Medium, or Low",
-      "dark_pattern_explanation": "1 sentence explaining the risk level based on the banner/reject behavior."
+      "dark_pattern_explanation": "1 sentence explaining the risk level based on the banner/reject behavior.",
+      "cookie_explanations": {"cookie_name": "One sentence explaining what this cookie likely does and whether it is essential, tracking, or advertising"}
     }
     `;
 

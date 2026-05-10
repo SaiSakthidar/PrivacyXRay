@@ -31,8 +31,7 @@
       <p class="hero-description">We visit the site with a real browser, reject cookies, read their privacy policy, and scan from 5 countries — all in under a minute.</p>
       <form class="search-form" id="search-form">
         <div class="search-input-wrapper">
-          <span class="search-prefix">https://</span>
-          <input type="text" id="url-input" class="search-input" placeholder="booking.com" autocomplete="off" spellcheck="false">
+          <input type="text" id="url-input" class="search-input" placeholder="https://booking.com" autocomplete="off" spellcheck="false">
         </div>
         <button type="submit" class="scan-btn" id="scan-btn">
           <span class="scan-btn-text">SCAN</span>
@@ -41,10 +40,8 @@
       </form>
       <div class="hero-examples">
         <span class="examples-label">Try:</span>
+        <button class="example-chip" data-url="skysports.com">skysports.com</button>
         <button class="example-chip" data-url="booking.com">booking.com</button>
-        <button class="example-chip" data-url="amazon.in">amazon.in</button>
-        <button class="example-chip" data-url="flipkart.com">flipkart.com</button>
-        <button class="example-chip" data-url="nytimes.com">nytimes.com</button>
       </div>
     </div>
   </section>
@@ -136,22 +133,52 @@
 
     <!-- AI Insights Card -->
     <div class="card ai-card hidden" id="ai-card">
-      <h3 class="card-label">✨ Gemini AI Insights</h3>
-      <div class="ai-summary" id="ai-summary"></div>
-      
-      <div class="ai-grid">
-        <div class="ai-box warning-box">
-          <h4>🚨 Key Violations</h4>
-          <ul id="ai-violations"></ul>
+      <div class="ai-header">
+        <div class="ai-header-icon">
+          <span class="ai-sparkle">✨</span>
+          <svg class="ai-orbit" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="url(#aiGrad)" stroke-width="2" stroke-dasharray="8 4" opacity="0.4"><animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="8s" repeatCount="indefinite"/></circle><defs><linearGradient id="aiGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs></svg>
         </div>
-        <div class="ai-box">
-          <h4>💡 Praise / Good Practices</h4>
-          <p id="ai-praise"></p>
+        <div>
+          <h3 class="ai-card-title">Gemini AI Insights</h3>
+          <p class="ai-card-subtitle">Powered by Gemini 2.5 Flash</p>
         </div>
-        <div class="ai-box pattern-box">
-          <h4>🕷️ Dark Pattern Risk: <span id="ai-risk-level"></span></h4>
-          <p id="ai-risk-explanation"></p>
+      </div>
+
+      <!-- Executive Summary -->
+      <div class="ai-executive" id="ai-summary"></div>
+
+      <!-- Risk Gauge + Violations Row -->
+      <div class="ai-main-grid">
+        <!-- Dark Pattern Risk Gauge -->
+        <div class="ai-risk-gauge">
+          <div class="risk-gauge-ring">
+            <svg viewBox="0 0 120 120" class="risk-ring-svg">
+              <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke-width="10" stroke-linecap="round"
+                id="ai-risk-ring-fill"
+                stroke-dasharray="301.59"
+                stroke-dashoffset="301.59"
+                style="transition: stroke-dashoffset 1.2s ease, stroke 0.5s ease;"/>
+            </svg>
+            <div class="risk-gauge-inner">
+              <span class="risk-gauge-level" id="ai-risk-level">—</span>
+              <span class="risk-gauge-label">Dark Pattern Risk</span>
+            </div>
+          </div>
+          <p class="risk-explanation" id="ai-risk-explanation"></p>
         </div>
+
+        <!-- Key Violations -->
+        <div class="ai-violations-panel">
+          <h4 class="ai-section-title"><span class="ai-section-icon">🚨</span> Key Violations</h4>
+          <ul class="ai-violations-list" id="ai-violations"></ul>
+        </div>
+      </div>
+
+      <!-- Praise -->
+      <div class="ai-praise-panel">
+        <h4 class="ai-section-title"><span class="ai-section-icon">💡</span> Good Practices</h4>
+        <p class="ai-praise-text" id="ai-praise"></p>
       </div>
     </div>
 
@@ -209,19 +236,12 @@
       <div class="atlas-insight" id="atlas-insight"></div>
     </div>
 
-    <!-- Removed Screenshot Card -->
-
     <!-- Scan Again -->
     <div class="scan-again-wrapper" id="scan-again-wrapper">
       <button class="scan-again-btn" id="scan-again-btn">🔬 Scan Another Website</button>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p>Built with <strong>Anakin APIs</strong> — Browser API + URL Scraper + Map API + Geo Routing</p>
-    <p class="footer-sub">Privacy X-Ray · Hackathon Project · 2026</p>
-  </footer>
 
   <script src="app.js"></script>
 </body>

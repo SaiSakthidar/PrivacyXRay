@@ -36,6 +36,9 @@ function classifyCookie(name, domain) {
   if (/sess|csrf|token|auth|login|sid/i.test(nameLower)) return 'essential';
   if (/consent|cookie|gdpr|ccpa/i.test(nameLower)) return 'essential';
 
+  // Functional cookies (user preferences)
+  if (/theme|color.?mode|dark.?mode|locale|lang|language|tz|timezone|preferred|bucket|device|screen|viewport/i.test(nameLower)) return 'essential';
+
   return 'unknown';
 }
 
@@ -117,8 +120,8 @@ async function auditCookies(targetUrl, apiKey, sendProgress) {
     let buttonText = null;
 
     try {
-      const rejectRegex = /^(reject all|decline all|deny all|refuse all|reject|decline|deny|refuse|essential only|necessary only)$/i;
-      const looseRejectRegex = /(reject all|decline all|deny all|refuse all|essential only)/i;
+      const rejectRegex = /^(reject all|decline all|deny all|refuse all|reject|decline|deny|refuse|essential only|necessary only|essential cookies only|only necessary|only essential)$/i;
+      const looseRejectRegex = /(reject all|decline all|deny all|refuse all|essential only|essential cookies|necessary only|only necessary|manage preferences|cookie settings)/i;
       
       let targetBtn = null;
 
@@ -150,23 +153,30 @@ async function auditCookies(targetUrl, apiKey, sendProgress) {
       }
 
       // 3. Fallback check if banner exists but no reject button
+      // Check main DOM for banner elements AND CMP iframe containers
       bannerFound = await page.evaluate(() => {
-        const sel = '[class*="cookie"], [id*="cookie"], [class*="consent"], [id*="sp_message"], [class*="onetrust"]';
-        return !!document.querySelector(sel);
-      }).catch(() => false);
-
-      if (!bannerFound) {
-        for (const frame of page.frames()) {
-          const frameBanner = await frame.evaluate(() => {
-            const sel = '[class*="cookie"], [id*="cookie"], [class*="consent"], [id*="sp_message"], [class*="onetrust"]';
-            return !!document.querySelector(sel);
-          }).catch(() => false);
-          if (frameBanner) {
-            bannerFound = true;
-            break;
-          }
+        // Standard banner selectors
+        const bannerSel = '[class*="cookie"], [id*="cookie"], [class*="consent"], [class*="onetrust"], [id*="onetrust"]';
+        if (document.querySelector(bannerSel)) return true;
+        
+        // Sourcepoint: injects an iframe with id like "sp_message_iframe_XXXXX" 
+        // and a container div with class "sp_message_container"
+        if (document.querySelector('iframe[id*="sp_message"]')) return true;
+        if (document.querySelector('[class*="sp_message"]')) return true;
+        if (document.querySelector('div[id*="sp_message"]')) return true;
+        
+        // TrustArc, Quantcast, generic CMP containers
+        if (document.querySelector('#truste-consent-track, .qc-cmp2-container, [id*="consent-banner"]')) return true;
+        
+        // Also check for any visible overlay/modal that looks like a consent popup
+        const overlays = document.querySelectorAll('[class*="privacy"], [id*="privacy"], [class*="gdpr"], [id*="gdpr"]');
+        for (const o of overlays) {
+          const rect = o.getBoundingClientRect();
+          if (rect.height > 50 && rect.width > 100) return true;
         }
-      }
+        
+        return false;
+      }).catch(() => false);
 
       if (targetBtn) {
         bannerFound = true;
@@ -204,6 +214,10 @@ async function auditCookies(targetUrl, apiKey, sendProgress) {
 
     // --- CLASSIFY & BUILD RESULT ---
     const siteDomain = new URL(targetUrl).hostname;
+    // Extract brand name for first-party matching
+    // e.g. "github.com" -> "github", "www.skysports.com" -> "skysports"
+    const domainParts = siteDomain.replace('www.', '').split('.');
+    const brandName = domainParts.length >= 2 ? domainParts[domainParts.length - 2] : domainParts[0];
 
     const classifiedBefore = beforeData.cookies.map(c => ({
       ...c,
@@ -217,8 +231,9 @@ async function auditCookies(targetUrl, apiKey, sendProgress) {
       isFirstParty: true
     }));
 
+    // Filter scripts: exclude first-party by checking if domain contains the brand name
     const classifiedScripts = beforeData.scripts
-      .filter(s => !s.domain.includes(siteDomain.replace('www.', '')))
+      .filter(s => !s.domain.toLowerCase().includes(brandName.toLowerCase()))
       .map(s => ({ ...s, category: classifyScript(s.domain) }));
 
     const beforeNames = new Set(classifiedBefore.map(c => c.name));
