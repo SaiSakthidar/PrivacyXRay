@@ -196,9 +196,13 @@ body {
   filter: drop-shadow(0 0 10px var(--accent));
   transition: stroke-dashoffset 2s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.5s, filter 0.5s;
 }
+.score-inner {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center;
+}
 .score-grade { font-size: 3.5rem; font-weight: 900; letter-spacing: -0.05em; line-height: 1; }
 .score-value { font-size: 0.9rem; font-weight: 700; margin-top: 2px; opacity: 0.8; }
-.score-label { font-size: 0.95rem; font-weight: 700; margin-top: 10px; }
+.score-label { font-size: 0.95rem; font-weight: 700; margin-top: 16px; color: var(--text-secondary); }
 
 /* Verdict Violations */
 .violations-list { gap: 12px; }
