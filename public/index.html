@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy X-Ray — Expose What Websites Really Do</title>
+  <meta name="description" content="Enter any website. We visit it with a real browser, reject its cookies, and expose the gap between privacy policy claims and reality.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand">
+      <span class="nav-icon">🔬</span>
+      <span class="nav-title">Privacy X-Ray</span>
+    </div>
+    <div class="nav-badge">Built with Anakin APIs</div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero-section">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="hero-icon">🔬</span>
+        Privacy <span class="gradient-text">X-Ray</span>
+      </h1>
+      <p class="hero-subtitle">Enter any website. We'll expose the truth behind their privacy claims.</p>
+      <p class="hero-description">We visit the site with a real browser, reject cookies, read their privacy policy, and scan from 5 countries — all in under a minute.</p>
+      <form class="search-form" id="search-form">
+        <div class="search-input-wrapper">
+          <span class="search-prefix">https://</span>
+          <input type="text" id="url-input" class="search-input" placeholder="booking.com" autocomplete="off" spellcheck="false">
+        </div>
+        <button type="submit" class="scan-btn" id="scan-btn">
+          <span class="scan-btn-text">SCAN</span>
+          <span class="scan-btn-icon">▶</span>
+        </button>
+      </form>
+      <div class="hero-examples">
+        <span class="examples-label">Try:</span>
+        <button class="example-chip" data-url="booking.com">booking.com</button>
+        <button class="example-chip" data-url="amazon.in">amazon.in</button>
+        <button class="example-chip" data-url="flipkart.com">flipkart.com</button>
+        <button class="example-chip" data-url="nytimes.com">nytimes.com</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pipeline Progress -->
+  <section class="pipeline-section hidden" id="pipeline-section">
+    <div class="pipeline-card">
+      <h2 class="pipeline-title">🔍 Live Audit Pipeline</h2>
+      <div class="pipeline-steps" id="pipeline-steps">
+        <div class="pipeline-step" data-step="connecting">
+          <div class="step-indicator"><span class="step-dot"></span></div>
+          <div class="step-content">
+            <span class="step-label">Browser Connect</span>
+            <span class="step-status" id="status-connecting"></span>
+          </div>
+        </div>
+        <div class="pipeline-step" data-step="cookies">
+          <div class="step-indicator"><span class="step-dot"></span></div>
+          <div class="step-content">
+            <span class="step-label">Cookie Extraction</span>
+            <span class="step-status" id="status-cookies"></span>
+          </div>
+        </div>
+        <div class="pipeline-step" data-step="policy">
+          <div class="step-indicator"><span class="step-dot"></span></div>
+          <div class="step-content">
+            <span class="step-label">Privacy Policy Analysis</span>
+            <span class="step-status" id="status-policy"></span>
+          </div>
+        </div>
+        <div class="pipeline-step" data-step="geo">
+          <div class="step-indicator"><span class="step-dot"></span></div>
+          <div class="step-content">
+            <span class="step-label">Geo Tracking Scan</span>
+            <span class="step-status" id="status-geo"></span>
+          </div>
+        </div>
+        <div class="pipeline-step" data-step="scoring">
+          <div class="step-indicator"><span class="step-dot"></span></div>
+          <div class="step-content">
+            <span class="step-label">Privacy Scoring</span>
+            <span class="step-status" id="status-scoring"></span>
+          </div>
+        </div>
+        <div class="pipeline-step" data-step="ai_analysis">
+          <div class="step-indicator"><span class="step-dot"></span></div>
+          <div class="step-content">
+            <span class="step-label">Gemini AI Analysis</span>
+            <span class="step-status" id="status-ai_analysis"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results Dashboard -->
+  <section class="results-section hidden" id="results-section">
+
+    <!-- Score + Verdict Row -->
+    <div class="results-row score-row">
+      <div class="card score-card" id="score-card">
+        <h3 class="card-label">Privacy Score</h3>
+        <div class="score-ring-container">
+          <svg class="score-ring" viewBox="0 0 120 120">
+            <circle class="score-ring-bg" cx="60" cy="60" r="52" />
+            <circle class="score-ring-fill" id="score-ring-fill" cx="60" cy="60" r="52" />
+          </svg>
+          <div class="score-inner">
+            <span class="score-grade" id="score-grade">—</span>
+            <span class="score-value" id="score-value">—/100</span>
+          </div>
+        </div>
+        <span class="score-label" id="score-label">Scanning...</span>
+      </div>
+      <div class="card verdict-card" id="verdict-card">
+        <h3 class="card-label">Verdict</h3>
+        <div class="verdict-icon" id="verdict-icon">🔍</div>
+        <ul class="violations-list" id="violations-list">
+          <li class="violation-placeholder">Waiting for scan results...</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- AI Insights Card -->
+    <div class="card ai-card hidden" id="ai-card">
+      <h3 class="card-label">✨ Gemini AI Insights</h3>
+      <div class="ai-summary" id="ai-summary"></div>
+      
+      <div class="ai-grid">
+        <div class="ai-box warning-box">
+          <h4>🚨 Key Violations</h4>
+          <ul id="ai-violations"></ul>
+        </div>
+        <div class="ai-box">
+          <h4>💡 Praise / Good Practices</h4>
+          <p id="ai-praise"></p>
+        </div>
+        <div class="ai-box pattern-box">
+          <h4>🕷️ Dark Pattern Risk: <span id="ai-risk-level"></span></h4>
+          <p id="ai-risk-explanation"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Claims vs Reality -->
+    <div class="card claims-card hidden" id="claims-card">
+      <h3 class="card-label">📋 Claims vs Reality</h3>
+      <div class="claims-grid">
+        <div class="claims-column claims-say">
+          <h4 class="claims-header">What They <span class="text-green">SAY</span></h4>
+          <div id="claims-list" class="claims-items"></div>
+        </div>
+        <div class="claims-divider"></div>
+        <div class="claims-column claims-do">
+          <h4 class="claims-header">What They <span class="text-red">DO</span></h4>
+          <div id="reality-list" class="claims-items"></div>
+        </div>
+      </div>
+      <div class="policy-quote hidden" id="policy-quote">
+        <span class="quote-icon">📜</span>
+        <blockquote id="quote-text"></blockquote>
+      </div>
+    </div>
+
+    <!-- Cookie Inventory -->
+    <div class="card cookie-card hidden" id="cookie-card">
+      <h3 class="card-label">🍪 Cookie Inventory</h3>
+      <div class="cookie-categories" id="cookie-categories"></div>
+      <div class="cookie-table-wrapper">
+        <table class="cookie-table" id="cookie-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody id="cookie-tbody"></tbody>
+        </table>
+      </div>
+      <div class="cookie-before-after" id="cookie-before-after"></div>
+    </div>
+
+    <!-- Tracker Atlas -->
+    <div class="card atlas-card hidden" id="atlas-card">
+      <h3 class="card-label">🌍 Tracker Atlas</h3>
+      <p class="atlas-subtitle">Same site, different countries, different surveillance.</p>
+      <div class="atlas-bars" id="atlas-bars"></div>
+      <div class="atlas-insight" id="atlas-insight"></div>
+    </div>
+
+    <!-- Screenshot Evidence -->
+    <div class="card screenshot-card hidden" id="screenshot-card">
+      <h3 class="card-label">📸 Screenshot Evidence</h3>
+      <div class="screenshot-frame">
+        <div class="screenshot-chrome">
+          <span class="chrome-dot red"></span>
+          <span class="chrome-dot yellow"></span>
+          <span class="chrome-dot green"></span>
+          <span class="chrome-url" id="screenshot-url"></span>
+        </div>
+        <img id="screenshot-img" class="screenshot-img" alt="Website screenshot" />
+      </div>
+      <p class="screenshot-caption" id="screenshot-caption"></p>
+    </div>
+
+    <!-- Scan Again -->
+    <div class="scan-again-wrapper" id="scan-again-wrapper">
+      <button class="scan-again-btn" id="scan-again-btn">🔬 Scan Another Website</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Built with <strong>Anakin APIs</strong> — Browser API + URL Scraper + Map API + Geo Routing</p>
+    <p class="footer-sub">Privacy X-Ray · Hackathon Project · 2026</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
