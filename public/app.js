@@ -466,22 +466,31 @@ function renderFinal(data) {
 
   // Color based on grade
   const gradeColors = {
-    A: 'var(--accent-green)', B: 'var(--accent-green)',
-    C: 'var(--accent-yellow)',
-    D: 'var(--accent-red)', F: 'var(--accent-red)'
+    A: '#10b981', B: '#10b981',
+    C: '#f59e0b',
+    D: '#ef4444', F: '#ef4444'
   };
-  ringFill.style.stroke = gradeColors[score.grade] || 'var(--accent-purple)';
+  const color = gradeColors[score.grade] || 'var(--accent)';
+  ringFill.style.stroke = color;
+  ringFill.style.filter = `drop-shadow(0 0 12px ${color}66)`;
 
   // Set score text
-  document.getElementById('score-grade').textContent = score.grade;
-  document.getElementById('score-grade').style.color = gradeColors[score.grade];
+  const gradeEl = document.getElementById('score-grade');
+  gradeEl.textContent = score.grade;
+  gradeEl.style.color = color;
+  gradeEl.style.textShadow = `0 0 20px ${color}44`;
+  
   document.getElementById('score-value').textContent = `${score.score}/100`;
-  document.getElementById('score-label').textContent = `"${score.label}"`;
-  document.getElementById('score-label').style.color = gradeColors[score.grade];
+  const labelEl = document.getElementById('score-label');
+  labelEl.textContent = `"${score.label}"`;
+  labelEl.style.color = color;
 
   // Verdict
   const verdictIcons = { A: '🟢', B: '🟢', C: '🟡', D: '🔴', F: '🔴' };
   document.getElementById('verdict-icon').textContent = verdictIcons[score.grade] || '🔍';
+  const verdictCard = document.getElementById('verdict-card');
+  verdictCard.style.borderColor = `${color}33`;
+  verdictCard.style.background = `linear-gradient(180deg, ${color}08, transparent)`;
 
   // Violations
   const violationsList = document.getElementById('violations-list');
