@@ -7,6 +7,20 @@ const pipelineSection = document.getElementById('pipeline-section');
 const resultsSection = document.getElementById('results-section');
 const scanAgainBtn = document.getElementById('scan-again-btn');
 
+// ===== THEME TOGGLE =====
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const savedTheme = localStorage.getItem('pxray-theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+themeIcon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('pxray-theme', next);
+  themeIcon.textContent = next === 'light' ? '🌙' : '☀️';
+});
+
 // Category colors
 const CATEGORY_COLORS = {
   essential: { bg: 'rgba(0,232,123,0.12)', color: '#00e87b', dot: '#00e87b', label: 'Essential' },
@@ -149,7 +163,7 @@ function completePipeline() {
 
 // ===== RESULTS RESET =====
 function resetResults() {
-  ['claims-card', 'cookie-card', 'atlas-card', 'ai-card'].forEach(id => {
+  ['claims-card', 'cookie-card', 'atlas-card', 'ai-card', 'policy-tldr-card'].forEach(id => {
     document.getElementById(id).classList.add('hidden');
   });
   document.getElementById('score-grade').textContent = '—';
@@ -406,6 +420,23 @@ function renderAIAnalysis(data) {
   });
 
   document.getElementById('ai-risk-explanation').textContent = data.dark_pattern_explanation || '';
+
+  // Policy TL;DR
+  if (data.policy_summary && data.policy_summary.length > 0) {
+    const tldrCard = document.getElementById('policy-tldr-card');
+    tldrCard.classList.remove('hidden');
+    
+    const wordCount = data.policy_word_count || 0;
+    if (wordCount > 0) {
+      document.getElementById('policy-word-badge').textContent = `${wordCount.toLocaleString()} words`;
+    } else {
+      document.getElementById('policy-word-badge').textContent = '';
+    }
+    
+    document.getElementById('policy-tldr-list').innerHTML = data.policy_summary
+      .map(point => `<li>${escapeHtml(point)}</li>`)
+      .join('');
+  }
 
   // Store cookie explanations and re-render table if cookies already loaded
   if (data.cookie_explanations && typeof data.cookie_explanations === 'object') {

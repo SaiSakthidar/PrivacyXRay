@@ -142,8 +142,14 @@ async function analyzePolicy(targetUrl, apiKey, sendProgress) {
   // Scrape the policy page with AI extraction
   sendProgress('policy', `Found policy: ${policyUrl} — analyzing...`);
 
+  // 30s timeout so blocked pages don't hang the pipeline
+  const withTimeout = (promise, ms) => Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Scrape timed out')), ms))
+  ]);
+
   try {
-    const result = await api.submitUrlScrape(policyUrl, true, 'us', false);
+    const result = await withTimeout(api.submitUrlScrape(policyUrl, true, 'us', false), 30000);
 
     const claims = parsePrivacyClaims(result.markdown, result.generatedJson);
 

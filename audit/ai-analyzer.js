@@ -23,6 +23,7 @@ async function analyzeWithAI(cookieData, policyData, geoData, apiKey, sendProgre
       cookie_names: cookieData?.cookies?.before_reject?.map(c => c.name) || [],
       policy_found: policyData?.policy_found || false,
       policy_claims: policyData?.claims || {},
+      policy_text_snippet: policyData?.markdown_snippet || '',
       geo_insights: geoData?.insights || {},
       top_trackers: cookieData?.scripts ? [...new Set(cookieData.scripts.map(s => s.domain))].slice(0, 5) : []
     };
@@ -40,7 +41,9 @@ async function analyzeWithAI(cookieData, policyData, geoData, apiKey, sendProgre
       "praise": "Any good practices found (or 'None' if awful)",
       "dark_pattern_risk": "High, Medium, or Low",
       "dark_pattern_explanation": "1 sentence explaining the risk level based on the banner/reject behavior.",
-      "cookie_explanations": {"cookie_name": "One sentence explaining what this cookie likely does and whether it is essential, tracking, or advertising"}
+      "cookie_explanations": {"cookie_name": "One sentence explaining what this cookie likely does and whether it is essential, tracking, or advertising"},
+      "policy_summary": ["3 bullet points summarizing what the privacy policy ACTUALLY says in plain English. Be blunt and specific, not corporate-speak."],
+      "policy_word_count": 0
     }
     `;
 

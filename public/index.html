@@ -3,39 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy X-Ray — Expose What Websites Really Do</title>
+  <title>Privacy X-Ray</title>
   <meta name="description" content="Enter any website. We visit it with a real browser, reject its cookies, and expose the gap between privacy policy claims and reality.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Navbar -->
   <nav class="navbar" id="navbar">
     <div class="nav-brand">
-      <span class="nav-icon">🔬</span>
       <span class="nav-title">Privacy X-Ray</span>
     </div>
-    <div class="nav-badge">Built with Anakin APIs</div>
+    <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+      <span class="theme-icon" id="theme-icon">☀️</span>
+    </button>
   </nav>
 
-  <!-- Hero Section -->
+  <!-- Hero -->
   <section class="hero" id="hero-section">
-    <div class="hero-glow"></div>
     <div class="hero-content">
-      <h1 class="hero-title">
-        <span class="hero-icon">🔬</span>
-        Privacy <span class="gradient-text">X-Ray</span>
-      </h1>
-      <p class="hero-subtitle">Enter any website. We'll expose the truth behind their privacy claims.</p>
-      <p class="hero-description">We visit the site with a real browser, reject cookies, read their privacy policy, and scan from 5 countries — all in under a minute.</p>
+      <h1 class="hero-title">Privacy <span class="gradient-text">X-Ray</span></h1>
+      <p class="hero-subtitle">Enter any website. We check if their privacy claims match reality.</p>
       <form class="search-form" id="search-form">
         <div class="search-input-wrapper">
           <input type="text" id="url-input" class="search-input" placeholder="https://booking.com" autocomplete="off" spellcheck="false">
         </div>
         <button type="submit" class="scan-btn" id="scan-btn">
           <span class="scan-btn-text">SCAN</span>
-          <span class="scan-btn-icon">▶</span>
         </button>
       </form>
       <div class="hero-examples">
@@ -46,10 +40,10 @@
     </div>
   </section>
 
-  <!-- Pipeline Progress -->
+  <!-- Pipeline -->
   <section class="pipeline-section hidden" id="pipeline-section">
     <div class="pipeline-card">
-      <h2 class="pipeline-title">🔍 Live Audit Pipeline</h2>
+      <h2 class="pipeline-title">Live Audit</h2>
       <div class="pipeline-steps" id="pipeline-steps">
         <div class="pipeline-step" data-step="connecting">
           <div class="step-indicator"><span class="step-dot"></span></div>
@@ -68,28 +62,28 @@
         <div class="pipeline-step" data-step="policy">
           <div class="step-indicator"><span class="step-dot"></span></div>
           <div class="step-content">
-            <span class="step-label">Privacy Policy Analysis</span>
+            <span class="step-label">Privacy Policy</span>
             <span class="step-status" id="status-policy"></span>
           </div>
         </div>
         <div class="pipeline-step" data-step="geo">
           <div class="step-indicator"><span class="step-dot"></span></div>
           <div class="step-content">
-            <span class="step-label">Geo Tracking Scan</span>
+            <span class="step-label">Geo Scan</span>
             <span class="step-status" id="status-geo"></span>
           </div>
         </div>
         <div class="pipeline-step" data-step="scoring">
           <div class="step-indicator"><span class="step-dot"></span></div>
           <div class="step-content">
-            <span class="step-label">Privacy Scoring</span>
+            <span class="step-label">Scoring</span>
             <span class="step-status" id="status-scoring"></span>
           </div>
         </div>
         <div class="pipeline-step" data-step="ai_analysis">
           <div class="step-indicator"><span class="step-dot"></span></div>
           <div class="step-content">
-            <span class="step-label">Gemini AI Analysis</span>
+            <span class="step-label">AI Analysis</span>
             <span class="step-status" id="status-ai_analysis"></span>
           </div>
         </div>
@@ -97,17 +91,16 @@
     </div>
   </section>
 
-  <!-- Results Dashboard -->
+  <!-- Results -->
   <section class="results-section hidden" id="results-section">
 
-    <!-- Target Info -->
-    <div class="target-header" id="target-header" style="margin-bottom: 24px; text-align: center;">
-      <h2 id="target-site-heading" style="margin-bottom: 4px; font-size: 1.8rem;"></h2>
-      <a id="target-site-url" href="#" target="_blank" style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem; text-decoration: none;"></a>
+    <div class="target-header" id="target-header">
+      <h2 id="target-site-heading"></h2>
+      <a id="target-site-url" href="#" target="_blank"></a>
     </div>
 
-    <!-- Score + Verdict Row -->
-    <div class="results-row score-row">
+    <!-- Row 1: Score + Verdict -->
+    <div class="dashboard-row two-col">
       <div class="card score-card" id="score-card">
         <h3 class="card-label">Privacy Score</h3>
         <div class="score-ring-container">
@@ -131,7 +124,7 @@
       </div>
     </div>
 
-    <!-- AI Insights Card -->
+    <!-- Row 2: AI Insights (full width) -->
     <div class="card ai-card hidden" id="ai-card">
       <div class="ai-header">
         <div class="ai-header-icon">
@@ -143,22 +136,13 @@
           <p class="ai-card-subtitle">Powered by Gemini 2.5 Flash</p>
         </div>
       </div>
-
-      <!-- Executive Summary -->
       <div class="ai-executive" id="ai-summary"></div>
-
-      <!-- Risk Gauge + Violations Row -->
       <div class="ai-main-grid">
-        <!-- Dark Pattern Risk Gauge -->
         <div class="ai-risk-gauge">
           <div class="risk-gauge-ring">
             <svg viewBox="0 0 120 120" class="risk-ring-svg">
               <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
-              <circle cx="60" cy="60" r="48" fill="none" stroke-width="10" stroke-linecap="round"
-                id="ai-risk-ring-fill"
-                stroke-dasharray="301.59"
-                stroke-dashoffset="301.59"
-                style="transition: stroke-dashoffset 1.2s ease, stroke 0.5s ease;"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke-width="10" stroke-linecap="round" id="ai-risk-ring-fill" stroke-dasharray="301.59" stroke-dashoffset="301.59" style="transition: stroke-dashoffset 1.2s ease, stroke 0.5s ease;"/>
             </svg>
             <div class="risk-gauge-inner">
               <span class="risk-gauge-level" id="ai-risk-level">—</span>
@@ -167,81 +151,78 @@
           </div>
           <p class="risk-explanation" id="ai-risk-explanation"></p>
         </div>
-
-        <!-- Key Violations -->
         <div class="ai-violations-panel">
           <h4 class="ai-section-title"><span class="ai-section-icon">🚨</span> Key Violations</h4>
           <ul class="ai-violations-list" id="ai-violations"></ul>
         </div>
       </div>
-
-      <!-- Praise -->
       <div class="ai-praise-panel">
         <h4 class="ai-section-title"><span class="ai-section-icon">💡</span> Good Practices</h4>
         <p class="ai-praise-text" id="ai-praise"></p>
       </div>
     </div>
 
-    <!-- Claims vs Reality -->
-    <div class="card claims-card hidden" id="claims-card">
-      <h3 class="card-label">📋 Claims vs Reality</h3>
-      <div class="claims-grid">
-        <div class="claims-column claims-say">
-          <h4 class="claims-header">What They <span class="text-green">SAY</span></h4>
-          <div id="claims-list" class="claims-items"></div>
+    <!-- Row 3: Policy TL;DR + Claims side by side -->
+    <div class="dashboard-row two-col">
+      <div class="card policy-tldr-card hidden" id="policy-tldr-card">
+        <div class="policy-tldr-header">
+          <h3 class="card-label">📜 Policy TL;DR</h3>
+          <span class="policy-word-badge" id="policy-word-badge"></span>
         </div>
-        <div class="claims-divider"></div>
-        <div class="claims-column claims-do">
-          <h4 class="claims-header">What They <span class="text-red">DO</span></h4>
-          <div id="reality-list" class="claims-items"></div>
-        </div>
+        <ul class="policy-tldr-list" id="policy-tldr-list"></ul>
       </div>
-      <div class="policy-quote hidden" id="policy-quote">
-        <span class="quote-icon">📜</span>
-        <blockquote id="quote-text"></blockquote>
+      <div class="card claims-card hidden" id="claims-card">
+        <h3 class="card-label">📋 Claims vs Reality</h3>
+        <div class="claims-grid">
+          <div class="claims-column claims-say">
+            <h4 class="claims-header">What They <span class="text-green">SAY</span></h4>
+            <div id="claims-list" class="claims-items"></div>
+          </div>
+          <div class="claims-divider"></div>
+          <div class="claims-column claims-do">
+            <h4 class="claims-header">What They <span class="text-red">DO</span></h4>
+            <div id="reality-list" class="claims-items"></div>
+          </div>
+        </div>
+        <div class="policy-quote hidden" id="policy-quote">
+          <span class="quote-icon">📜</span>
+          <blockquote id="quote-text"></blockquote>
+        </div>
       </div>
     </div>
 
-    <!-- Cookie Inventory -->
-    <div class="card cookie-card hidden" id="cookie-card">
-      <div class="cookie-header">
-        <h3 class="card-label">🍪 Cookie Inventory</h3>
-        <div class="cookie-tabs">
-          <button class="cookie-tab active" data-view="before">Initial Cookies</button>
-          <button class="cookie-tab" data-view="after">Persistent (After Reject)</button>
-          <button class="cookie-tab" data-view="added">Added Post-Reject</button>
+    <!-- Row 4: Cookies + Atlas side by side -->
+    <div class="dashboard-row two-col">
+      <div class="card cookie-card hidden" id="cookie-card">
+        <div class="cookie-header">
+          <h3 class="card-label">🍪 Cookie Inventory</h3>
+          <div class="cookie-tabs">
+            <button class="cookie-tab active" data-view="before">Before</button>
+            <button class="cookie-tab" data-view="after">After Reject</button>
+            <button class="cookie-tab" data-view="added">Added</button>
+          </div>
         </div>
+        <div class="cookie-categories" id="cookie-categories"></div>
+        <div class="cookie-table-wrapper">
+          <table class="cookie-table" id="cookie-table">
+            <thead><tr><th>Name</th><th>Category</th><th>Value</th></tr></thead>
+            <tbody id="cookie-tbody"></tbody>
+          </table>
+        </div>
+        <div class="cookie-before-after" id="cookie-before-after"></div>
       </div>
-      <div class="cookie-categories" id="cookie-categories"></div>
-      <div class="cookie-table-wrapper">
-        <table class="cookie-table" id="cookie-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody id="cookie-tbody"></tbody>
-        </table>
+      <div class="card atlas-card hidden" id="atlas-card">
+        <h3 class="card-label">🌍 Tracker Atlas</h3>
+        <p class="atlas-subtitle">Same site, different countries.</p>
+        <div class="atlas-bars" id="atlas-bars"></div>
+        <div class="atlas-insight" id="atlas-insight"></div>
       </div>
-      <div class="cookie-before-after" id="cookie-before-after"></div>
     </div>
 
-    <!-- Tracker Atlas -->
-    <div class="card atlas-card hidden" id="atlas-card">
-      <h3 class="card-label">🌍 Tracker Atlas</h3>
-      <p class="atlas-subtitle">Same site, different countries, different surveillance.</p>
-      <div class="atlas-bars" id="atlas-bars"></div>
-      <div class="atlas-insight" id="atlas-insight"></div>
-    </div>
-
-    <!-- Scan Again -->
     <div class="scan-again-wrapper" id="scan-again-wrapper">
-      <button class="scan-again-btn" id="scan-again-btn">🔬 Scan Another Website</button>
+      <button class="scan-again-btn" id="scan-again-btn">Scan Another Website</button>
     </div>
   </section>
-
 
   <script src="app.js"></script>
 </body>

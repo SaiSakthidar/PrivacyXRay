@@ -3,10 +3,17 @@ const { TRACKER_DB } = require('./cookie-auditor');
 
 const COUNTRIES = [
   { code: 'us', name: 'United States', flag: '🇺🇸' },
+  { code: 'gb', name: 'United Kingdom', flag: '🇬🇧' },
   { code: 'de', name: 'Germany', flag: '🇩🇪' },
+  { code: 'fr', name: 'France', flag: '🇫🇷' },
   { code: 'in', name: 'India', flag: '🇮🇳' },
   { code: 'jp', name: 'Japan', flag: '🇯🇵' },
-  { code: 'br', name: 'Brazil', flag: '🇧🇷' }
+  { code: 'br', name: 'Brazil', flag: '🇧🇷' },
+  { code: 'au', name: 'Australia', flag: '🇦🇺' },
+  { code: 'ca', name: 'Canada', flag: '🇨🇦' },
+  { code: 'nl', name: 'Netherlands', flag: '🇳🇱' },
+  { code: 'sg', name: 'Singapore', flag: '🇸🇬' },
+  { code: 'ae', name: 'UAE', flag: '🇦🇪' }
 ];
 
 const ALL_TRACKER_DOMAINS = [
@@ -78,12 +85,20 @@ async function trackGeo(targetUrl, apiKey, sendProgress) {
 
   sendProgress('geo', `Scanning ${targetUrl} from ${COUNTRIES.length} countries...`);
 
-  // Fire all 5 country requests in parallel
+  // Timeout helper — 30s max per country
+  const withTimeout = (promise, ms) => Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
+  ]);
+
   const results = await Promise.allSettled(
     COUNTRIES.map(async (country) => {
       sendProgress('geo', `Scanning from ${country.flag} ${country.name}...`);
       try {
-        const result = await api.submitUrlScrape(targetUrl, false, country.code, true);
+        const result = await withTimeout(
+          api.submitUrlScrape(targetUrl, false, country.code, true),
+          30000
+        );
         const html = result.html || result.cleanedHtml || '';
         const analysis = extractTrackersFromHtml(html);
         return { country, ...analysis, status: 'success' };

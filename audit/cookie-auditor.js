@@ -53,12 +53,26 @@ async function auditCookies(targetUrl, apiKey, sendProgress) {
   sendProgress('connecting', 'Connecting to stealth browser...');
 
   let browser;
-  try {
-    browser = await chromium.connectOverCDP(
-      'wss://api.anakin.io/v1/browser-connect',
-      { headers: { 'X-API-Key': apiKey }, timeout: 60000 }
-    );
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      browser = await chromium.connectOverCDP(
+        'wss://api.anakin.io/v1/browser-connect',
+        { headers: { 'X-API-Key': apiKey }, timeout: 60000 }
+      );
+      break;
+    } catch (err) {
+      retries--;
+      if (retries > 0 && (err.message.includes('busy') || err.message.includes('closed') || err.message.includes('4029'))) {
+        sendProgress('connecting', `Browser busy, retrying in 5s... (${retries} left)`);
+        await new Promise(r => setTimeout(r, 5000));
+        continue;
+      }
+      throw err;
+    }
+  }
 
+  try {
     const page = browser.contexts()[0].pages()[0];
     sendProgress('cookies', `Navigating to ${targetUrl}...`);
 
