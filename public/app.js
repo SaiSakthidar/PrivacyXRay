@@ -334,14 +334,13 @@ function renderGeo(data) {
 
   barsContainer.innerHTML = Object.entries(countries).map(([code, c]) => {
     const pct = ((c.tracker_count / maxCount) * 100).toFixed(0);
-    const bannerTag = c.has_consent_banner ? ' <span style="color:var(--accent-green);font-size:0.7rem">(consent banner)</span>' : '';
     return `
       <div class="atlas-bar-row">
         <div class="atlas-country">${c.flag || ''} ${c.name || code.toUpperCase()}</div>
         <div class="atlas-bar-track">
           <div class="atlas-bar-fill" style="width:0%" data-width="${pct}%"></div>
         </div>
-        <div class="atlas-count">${c.tracker_count}${bannerTag}</div>
+        <div class="atlas-count">${c.tracker_count}</div>
       </div>`;
   }).join('');
 
