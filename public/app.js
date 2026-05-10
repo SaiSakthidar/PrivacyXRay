@@ -52,6 +52,16 @@ function startAudit(url) {
   resetPipeline();
   resetResults();
 
+  try {
+    const urlObj = new URL(url.startsWith('http') ? url : 'https://' + url);
+    document.getElementById('target-site-heading').textContent = 'Auditing ' + urlObj.hostname.replace(/^www\./, '');
+    document.getElementById('target-site-url').textContent = urlObj.href;
+    document.getElementById('target-site-url').href = urlObj.href;
+  } catch (e) {
+    document.getElementById('target-site-heading').textContent = 'Auditing ' + url;
+    document.getElementById('target-site-url').textContent = url;
+  }
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const eventSource = new EventSource(`/api/audit?url=${encodeURIComponent(url)}`);
@@ -136,7 +146,7 @@ function completePipeline() {
 
 // ===== RESULTS RESET =====
 function resetResults() {
-  ['claims-card', 'cookie-card', 'atlas-card', 'screenshot-card', 'ai-card'].forEach(id => {
+  ['claims-card', 'cookie-card', 'atlas-card', 'ai-card'].forEach(id => {
     document.getElementById(id).classList.add('hidden');
   });
   document.getElementById('score-grade').textContent = '—';
@@ -161,21 +171,18 @@ function renderCookies(data) {
       return `<div class="category-chip"><span class="category-dot" style="background:${c.dot}"></span>${c.label} (${count})</div>`;
     }).join('');
 
-  // Cookie table
-  const tbody = document.getElementById('cookie-tbody');
-  const cookies = data.cookies.before_reject || [];
-  tbody.innerHTML = cookies.slice(0, 30).map(c => {
-    const cat = CATEGORY_COLORS[c.category] || CATEGORY_COLORS.unknown;
-    return `<tr>
-      <td>${escapeHtml(c.name)}</td>
-      <td><span class="cookie-category-badge" style="background:${cat.bg};color:${cat.color}">${cat.label}</span></td>
-      <td>${escapeHtml((c.value || '').substring(0, 30))}${(c.value || '').length > 30 ? '…' : ''}</td>
-    </tr>`;
-  }).join('');
+  // Set up tab events
+  document.querySelectorAll('.cookie-tab').forEach(tab => {
+    // Only add listener once
+    tab.onclick = (e) => {
+      document.querySelectorAll('.cookie-tab').forEach(t => t.classList.remove('active'));
+      e.target.classList.add('active');
+      renderCookieTable(data.cookies, e.target.dataset.view);
+    };
+  });
 
-  if (cookies.length > 30) {
-    tbody.innerHTML += `<tr><td colspan="3" style="color:var(--text-muted);text-align:center">...and ${cookies.length - 30} more</td></tr>`;
-  }
+  // Render initial table
+  renderCookieTable(data.cookies, 'before');
 
   // Before/After stats
   const ba = document.getElementById('cookie-before-after');
@@ -199,15 +206,37 @@ function renderCookies(data) {
       Third-party scripts
     </div>
   `;
+}
 
-  // Screenshot
-  if (data.screenshot) {
-    const screenshotCard = document.getElementById('screenshot-card');
-    screenshotCard.classList.remove('hidden');
-    document.getElementById('screenshot-img').src = 'data:image/png;base64,' + data.screenshot;
-    document.getElementById('screenshot-url').textContent = data.url;
-    document.getElementById('screenshot-caption').textContent =
-      `Captured via Anakin Browser API (stealth Chromium) · ${data.cookie_banner_found ? 'Cookie banner detected' : 'No cookie banner'} · ${data.reject_button_found ? 'Reject button found' : 'No reject button'}`;
+function renderCookieTable(cookiesData, view) {
+  const tbody = document.getElementById('cookie-tbody');
+  
+  let list = [];
+  if (view === 'before') list = cookiesData.before_reject || [];
+  if (view === 'after') list = cookiesData.after_reject || [];
+  if (view === 'added') list = cookiesData.added_after_reject || []; // this is just names right now, wait
+  
+  // Actually added_after_reject was just an array of names. Let's map them to their full object from after_reject.
+  if (view === 'added') {
+    list = cookiesData.after_reject.filter(c => cookiesData.added_after_reject.includes(c.name));
+  }
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:20px;">No cookies found for this view.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.slice(0, 50).map(c => {
+    const cat = CATEGORY_COLORS[c.category] || CATEGORY_COLORS.unknown;
+    return `<tr>
+      <td>${escapeHtml(c.name)}</td>
+      <td><span class="cookie-category-badge" style="background:${cat.bg};color:${cat.color}">${cat.label}</span></td>
+      <td title="${escapeHtml(c.value || '')}">${escapeHtml((c.value || '').substring(0, 40))}${(c.value || '').length > 40 ? '…' : ''}</td>
+    </tr>`;
+  }).join('');
+
+  if (list.length > 50) {
+    tbody.innerHTML += `<tr><td colspan="3" style="color:var(--text-muted);text-align:center">...and ${list.length - 50} more</td></tr>`;
   }
 }
 

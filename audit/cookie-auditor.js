@@ -61,7 +61,8 @@ async function auditCookies(targetUrl, apiKey, sendProgress) {
 
     // Navigate to target
     await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForTimeout(3000); // Let trackers load
+    sendProgress('cookies', 'Waiting for trackers and CMP to initialize...');
+    await page.waitForTimeout(6000); // Wait longer for iframes and CMPs to inject the banner
 
     // --- BEFORE REJECTION: Extract everything ---
     sendProgress('cookies', 'Extracting cookies & trackers before interaction...');
@@ -107,11 +108,6 @@ async function auditCookies(targetUrl, apiKey, sendProgress) {
 
       return { cookies, localStorageKeys, scripts, pixels, iframes };
     });
-
-    // Take screenshot BEFORE interacting with the banner
-    sendProgress('cookies', 'Taking screenshot of initial state...');
-    const screenshotBuffer = await page.screenshot({ type: 'png', fullPage: false });
-    const screenshot = screenshotBuffer.toString('base64');
 
     // --- TRY TO FIND AND CLICK REJECT ---
     sendProgress('cookies', 'Looking for cookie banner...');
@@ -234,7 +230,6 @@ async function auditCookies(targetUrl, apiKey, sendProgress) {
     classifiedBefore.forEach(c => categoryCounts[c.category] = (categoryCounts[c.category] || 0) + 1);
 
     return {
-      screenshot,
       url: targetUrl,
       cookies: {
         before_reject: classifiedBefore,

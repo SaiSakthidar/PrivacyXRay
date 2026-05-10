@@ -103,6 +103,12 @@
   <!-- Results Dashboard -->
   <section class="results-section hidden" id="results-section">
 
+    <!-- Target Info -->
+    <div class="target-header" id="target-header" style="margin-bottom: 24px; text-align: center;">
+      <h2 id="target-site-heading" style="margin-bottom: 4px; font-size: 1.8rem;"></h2>
+      <a id="target-site-url" href="#" target="_blank" style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem; text-decoration: none;"></a>
+    </div>
+
     <!-- Score + Verdict Row -->
     <div class="results-row score-row">
       <div class="card score-card" id="score-card">
@@ -171,7 +177,14 @@
 
     <!-- Cookie Inventory -->
     <div class="card cookie-card hidden" id="cookie-card">
-      <h3 class="card-label">🍪 Cookie Inventory</h3>
+      <div class="cookie-header">
+        <h3 class="card-label">🍪 Cookie Inventory</h3>
+        <div class="cookie-tabs">
+          <button class="cookie-tab active" data-view="before">Initial Cookies</button>
+          <button class="cookie-tab" data-view="after">Persistent (After Reject)</button>
+          <button class="cookie-tab" data-view="added">Added Post-Reject</button>
+        </div>
+      </div>
       <div class="cookie-categories" id="cookie-categories"></div>
       <div class="cookie-table-wrapper">
         <table class="cookie-table" id="cookie-table">
@@ -196,20 +209,7 @@
       <div class="atlas-insight" id="atlas-insight"></div>
     </div>
 
-    <!-- Screenshot Evidence -->
-    <div class="card screenshot-card hidden" id="screenshot-card">
-      <h3 class="card-label">📸 Screenshot Evidence</h3>
-      <div class="screenshot-frame">
-        <div class="screenshot-chrome">
-          <span class="chrome-dot red"></span>
-          <span class="chrome-dot yellow"></span>
-          <span class="chrome-dot green"></span>
-          <span class="chrome-url" id="screenshot-url"></span>
-        </div>
-        <img id="screenshot-img" class="screenshot-img" alt="Website screenshot" />
-      </div>
-      <p class="screenshot-caption" id="screenshot-caption"></p>
-    </div>
+    <!-- Removed Screenshot Card -->
 
     <!-- Scan Again -->
     <div class="scan-again-wrapper" id="scan-again-wrapper">
